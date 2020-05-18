@@ -1,0 +1,180 @@
+
+
+
+
+Github - josiels -> cplight
+
+# git init => iniciar o github
+# git add --all => prepara todos os arquivos para serem comitados
+# git commit -m "Mensagem" => comita os arquivos que foram preparados
+# git remote add origin https://github.com/josiels/laravel-cplight.git => adiciona o repositório origin
+# git push -u origin master => pega os arquivos que estão em master e envia para o repositório origin que é o que está no servidor do git online
+
+
+*** quando modifiar um arquivo no projeto e precisar mandar para o Github
+
+# git add --all
+# git commit -m "mensagem"
+# git remote add origin https://github.com/josiels/laravel-cplight.git
+# git push -u origin master
+
+
+///////////////////////////////////////////////////////////////////////////
+
+VERBOS HTTP
+
+# GET
+# POST
+# PUT
+# DELETE
+# PATCH
+
+
+///////////////////////////////////////////////////////////////////////////
+
+CONVENÇÕES
+    
+    - Para criar controllers convencionou-se criar com a primeira letra maiúscula
+        seguido do nome "Controller", ex: UserController
+
+    - Para criar métodos dentro dos controllers usa o método index() para exibir 
+        tudo sobre o controller, ex: UserController -> index() listaria todos os usuários.
+
+    - Para exibir um item específico de um controller cria-se o método show()
+
+    - 
+
+///////////////////////////////////////////////////////////////////////////
+
+CRUD
+    
+    - Depois de criar seu controller:
+        -> No arquivo web.php de Rotas crie uma rota para um crude completo
+        com o seguinte comando "Route::resource('users', 'UserController');"
+
+        ->usa o comando "php artisan make:controller UserController --resource"
+
+///////////////////////////////////////////////////////////////////////////
+
+INJEÇÃO DE DEPENDÊNCIAS - DI
+
+    
+
+///////////////////////////////////////////////////////////////////////////
+
+ARTISAN
+    Comandos:
+
+        /*Lista todos os comandos do artisan*/
+        php artisan
+
+    # Rotas 
+        /*Lista as rotas do seu projeto*/
+        php artisan route:list
+
+        /*limpa as rotas que estão em cache*/
+        php artisan route:cache
+
+    # Controller
+        /*Cria um controle no projeto*/
+        php artisan make::controller ProductController
+
+///////////////////////////////////////////////////////////////////////////
+
+ROTAS
+
+MATCH: Pemite todos os tipos e acesos de verbos HTTP definidos no parametro
+    Route::match(['put', 'get', 'post', 'delete'], '/match', function(){
+        return 'Página Match';
+    });
+
+ANY: Pemite todos os tipos e acesos de verbos HTTP
+    Route::match('/match', function(){
+        return 'Página Any';
+    });
+
+Rotas com parâmetros:
+    Route::get('/categorias/{cat}', function($cat){
+        return 'Página categoria: {$cat}';
+    });
+
+    Route::get('/categorias/{cat}/posts', function($cat){
+        return 'Página categoria: {$cat}';
+    });
+
+    # passa parametros e defini valor default para listar todos caso precise
+    Route::get('/categorias/{cat?}', function($cat = ''){
+        return 'Página categoria: {$cat}';
+    });
+
+    ## Redirecionamento de Rotas
+    
+    #01
+    Route::get('/categorias', function(){
+        return redirect('/categ02');
+    });
+    
+    #02
+    Route::get('/categorias', '/categ02');
+    
+    #03
+    Route::view('/view', 'welcome');
+
+    ## Rotas nomeadas
+
+    Route::get('/categorias', function(){
+        return redirect('/categ02');
+    })->name('url.name');
+
+    # caso queira referenciar a rota nomeada usa:
+    Route::get('/categorias', function(){
+        return redirect()->route('url.name');
+    });
+
+    ## Grupos de Rotas
+
+    Route::middleware(['auth'])->group(function(){
+        Route::prefix('panel')->group(function(){
+            Route::get('/categorias', function(){
+                return 'Categoria';
+            });
+            Route::get('/posts', function(){
+                return 'Posts';
+            });
+            Route::get('/', function(){
+                return 'Admin';
+            });
+
+        });
+    });
+
+
+    Route::middleware([])->group(function(){
+        Route::prefix('admin')->group(function(){
+            Route::namespace('Admin')->group(function(){
+                Route::name('admin.')->group(function() {
+                    Route::get('/dasboard', )->name('dashboard');
+                    Route::get('/financeiro', )->name('financeiro');
+                    
+                    Route::get('/', function(){
+                        return redirect()->route('admin.dashboard');
+                    })->name('home');
+                });
+            });
+        });
+    });
+
+    *****Melhor usado em grupos de Rotas
+
+    Route::group([
+        'middleware' => [],
+        'prefix' => 'admin',
+        'namespace' => 'Admin',
+        'name' => 'admin.'
+    ], function(){
+        Route::get('/dasboard', )->name('dashboard');
+        Route::get('/financeiro', )->name('financeiro');
+        Route::get('/', function(){
+            return redirect()->route('admin.dashboard');
+        })->name('home');
+    });
