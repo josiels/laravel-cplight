@@ -6,6 +6,12 @@
 
     <h1>Exibindo os usuários</h1>
 
+    <a href="{{ route('users.create') }}">Cadastrar</a>
+
+    @include('admin.includes.alerts', ['contents' => 'Alerta dos nomes dos usuários'])
+
+    <hr />
+
     {{ $teste}}
 
     @if($teste === 123)
@@ -52,5 +58,19 @@
         @default
             Default
     @endswitch
+
+    <!-- Estrutura de repetição usando FOREACH-->
+    @if (isset($usuarios))
+        @foreach ($usuarios as $usuario)
+            <p>{{ $usuario }}</p>
+        @endforeach
+    @endif
+    <hr />
+    <!-- Estrutura de repetição usando FORELSE-->
+    @forelse ($usuarios as $usuario)
+        <p>{{ $usuario }}</p>
+    @empty
+        <p>Nenhum usuário encontrado</p>
+    @endforelse
 
 @endsection

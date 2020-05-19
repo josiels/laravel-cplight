@@ -13,9 +13,9 @@ class UserController extends Controller
         
         $this->$request = $request;
 
-        $this->middleware('auth')->except([
-            'index', 'show'
-        ]);
+        // $this->middleware('auth')->except([
+        //     'index', 'show'
+        // ]);
 
     }
 
@@ -30,8 +30,9 @@ class UserController extends Controller
         //pode retornar o método compact() com o nome das váriáveis presentes
         $teste = 12345;
         $chilofone = '<h1>CHI</h1>';
+        $usuarios = ['Josiel Souza', 'Fernanda Virginia', 'Laurinha Virginia', 'Lorenzo Dias'];
 
-        return view('admin.pages.users.index', compact('teste', 'chilofone'));
+        return view('admin.pages.users.index', compact('teste', 'chilofone', 'usuarios'));
     }
 
     /**
@@ -41,7 +42,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.pages.users.create');
     }
 
     /**

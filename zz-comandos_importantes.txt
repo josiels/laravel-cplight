@@ -178,3 +178,32 @@ Rotas com parâmetros:
             return redirect()->route('admin.dashboard');
         })->name('home');
     });
+
+
+    ///////////////////////////////////////////////////////////////////////
+
+    BLADE
+
+        # Estrutura de repetição
+            <!-- Estrutura de repetição usando FOREACH-->
+            @if (isset($usuarios))
+                @foreach ($usuarios as $usuario)
+                    <p>{{ $usuario }}</p>
+                @endforeach
+            @endif
+            <hr />
+            <!-- Estrutura de repetição usando FORELSE-->
+            @forelse ($usuarios as $usuario)
+                <p>{{ $usuario }}</p>
+            @empty
+                <p>Nenhum usuário encontrado</p>
+            @endforelse
+
+            * Pode-se usar a variável $loop->first "para selecionar o primeiro elemento da repetição"
+                ou $loop->last "para selecionar o último elemento da repetição"
+
+        
+        # INCLUDES
+            
+
+
