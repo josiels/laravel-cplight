@@ -1,0 +1,124 @@
+Novo projeto: Uma app de controle de estoque
+    Para começar a aprender Laravel, vamos criar um novo projeto chamado estoque. Fazer isso é verdadeiramente simples, desde o começo você já percebe as vantagens em usar o framework. Quer ver como é fácil? Se você já tem o Laravel instalado, tudo que precisa fazer é rodar o comando laravel new pelo terminal, passando o nome do projeto que queremos criar. Em nosso caso seria:
+           laravel new estoque
+    Mas é importante perceber que o comando acima sempre baixa a versão mais atual do framework, que pode ter algumas diferenças em relação ao conteúdo da versão 5.0 que foi utilizada na gravação do curso. Para evitar este tipo de problema, recomendamos que você instale com essa versão específica:
+           composer create-project laravel/laravel estoque "5.0."
+
+Executando o Laravel com ajuda do Artisan
+      Execute o comando php artisan serve, que executa a aplicação no servidor de desenvolvimento do PHP.
+      Basta rodar esse comando no terminal, de dentro da pasta do projeto:
+            $ cd estoque
+            $ composer install
+            $ php artisan serve
+      Se tudo correu bem, a mensagem `Laravel development server started on http://localhost:8000 deve ter aparecido no seu terminal. Acesse essa URL no navegador de sua preferência para ver o resultado.
+
+Alterando o namespace pardão com Artisan
+      O ::namespace:: padrão de toda aplicação com Laravel é App, mas é muito comum e bastante recomendado que você altere o namespace para o nome da sua aplicação. Para fazer isso, basta executar o seguinte comando pelo seu terminal:
+            php artisan app:name estoque
+
+Criando nossa primeira lógica
+  Apague todo o conteúdo do arquivo routes.php, (localizado em \app\Http) que atualmente deve estar parecido com:
+  <?php
+    // comentário omitido
+      Route::get('/', 'WelcomeController@index');
+      Route::get('home', 'HomeController@index');
+
+      Route::controllers([
+        'auth' => 'Auth\AuthController',
+        'password' => 'Auth\PasswordController',
+      ]);
+  No lugar disso, crie uma rota que ensine ao Laravel que quando alguém acessar o URI /, o texto Primeira lógica com Laravel deverá ser exibido. Quando terminar, poste o conteúdo do seu arquivo routes.php aqui na resposta.
+        Route::get('/', function() '{
+            return 'Primeira lógica com Laravel';
+        });
+
+Colocando MVC em prática
+    Crie um novo arquivo chamado ProdutoController, dentro da pasta app/Http/Controllers, que é o diretório padrão para esse tipo de classe. Dentro do controller, crie um método chamado lista. E que como estamos trabalhando com uma estrutura de diretórios, temos que definir o ::namespace:: no cabeçalho do arquivo. Lembre-se que todo controller do Laravel deve herdar (extends) da classe Controller. O arquivo ProdutoController.php deve ficar assim:
+    <?php namespace estoque\Http\Controllers;
+        class ProdutoController extends Controller {
+
+            public function lista(){
+                // nosso código vai aqui
+            }
+        }
+
+Criando uma rota para o controller
+    Inicialmente, vamos fazer o método lista retornar um HTML puro, com o cabeçalho da listagem de produtos. O código ficará assim:
+        <?php namespace estoque\Http\Controllers;
+            class ProdutoController extends Controller {
+
+                public function lista(){
+                    return '<h1>Listagem de produtos com Laravel</h1>';
+                }
+            }    
+    E agora que temos esse comportamento definido no controller, crie uma rota para ele no arquivo routes.php.
+        Route::get('/produtos', 'ProdutoController@lista');
+    Vamos testar? Basta acessar http://localhost:8000/produtos em seu navegador.
+    
+Listando todos os produtos do banco de dados
+    Mude o método list do ProdutoController para buscar todos os produtos do banco (por enquanto manualmente, com a classe DB). Pra ver resultado, faça com que o método retorne um html exibindo cada um dos produtos do banco. Ele deve ficar assim:
+        <?php namespace estoque\Http\Controllers;
+            use Illuminate\Support\Facades\DB;
+            class ProdutoController extends Controller {
+                public function lista(){
+                    $html = '<h1>Listagem de produtos com Laravel</h1>';
+                    $html .= '<ul>';
+                    $produtos = DB::select('select * from produtos');
+                    foreach ($produtos as $p) {
+                        $html .= '<li> Nome: '. $p->nome .', Descrição: '. $p->descricao .'</li>';
+                    }
+                    $html .= '</ul>';
+                    return $html;
+                }
+            }
+            
+Trabalhando com a View  
+    Instalando Scafold 
+        https://github.com/bestmomo/scafold
+        Abre o arquivo [ composer.json ] e adicione a seguinte linha de codigo abaixo do : 
+        "laravel/framework": "5.4.*",
+        "bestmomo/scafold":"dev-master"
+        
+        No prompt de comando [ cmd ], atualize o composer 
+            $ composer update
+        
+        Depois de atualizado, adicione o service provider no [ config/app.php ]
+            Bestmomo\Scafold\ScafoldServiceProvider::class,
+    
+    Camada View
+        Criando uma view no [ resources/views/ ... ] chamando-a de : listagem.php
+            <html>
+              <body>
+                <h1>Listagem de produtos</h1>
+                <table>
+                <tr>
+                    <td>Nome</td>
+                    <td>Valor</td>
+                    <td>Descricao</td>
+                    <td>Quant</td>
+                  </tr>
+                  <?php foreach ($produtos as $p): ?>
+                  <tr>
+                    <td><?= $p->nome ?></td>
+                    <td><?= $p->valor ?></td>
+                    <td><?= $p->descricao ?></td>
+                    <td><?= $p->quantidade ?></td>
+                  </tr>
+                  <?php endforeach ?>
+                </table>
+              </body>
+            </html>
+       Incluindo parametro view : App/Http/Controllers/ProdutoController.php
+            <?php namespace estoque\Http\Controllers;
+                use Illuminate\Support\Facades\DB;
+                use estoque\Produto;
+
+                class ProdutoController extends Controller {
+
+                    public function lista(){
+                        $produtos = DB::select('select * from produtos');
+                        return view('listagem')->with('produtos', $produtos);
+                    }
+                }
+         Adicionando Bootstrap
+                <link href="/css/app.css" rel="stylesheet">
